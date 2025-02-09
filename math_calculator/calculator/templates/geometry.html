@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор Геометрии</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .calculator, .canvas-container {
+            margin: 20px;
+            padding: 20px;
+            border: 2px solid #000;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        canvas {
+            border: 1px solid black;
+            cursor: crosshair;
+        }
+        input, select, button {
+            margin: 5px;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Калькулятор Геометрии</h1>
+    
+    <div class="container">
+        <div class="calculator">
+            <h2>Выберите фигуру</h2>
+            <select id="shape" onchange="showForm()">
+                <option value="triangle">Треугольник</option>
+                <option value="rectangle">Прямоугольник</option>
+                <option value="square">Квадрат</option>
+                <option value="circle">Круг</option>
+            </select>
+            <h2>Выберите, что вычислить</h2>
+            <select id="calculationType" onchange="toggleCalculationFields()">
+                <option value="none">Ничего (просто нарисовать)</option>
+                <option value="area">Площадь</option>
+                <option value="perimeter">Периметр</option>
+                <option value="side">Сторона</option>
+                <option value="angle">Угол</option>
+                <option value="height">Высота</option>
+                <option value="bisector">Биссектриса</option>
+                <option value="median">Медиана</option>
+                <option value="diameter">Диаметр</option>
+            </select>
+
+            <div id="form-container"></div>
+
+            <button onclick="calculate()">Рассчитать</button>
+            <h3>Результат: <span id="result">-</span></h3>
+        </div>
+
+        <div class="canvas-container">
+            <h2>Графическое представление</h2>
+            <canvas id="canvas" width="300" height="300"></canvas>
+        </div>
+    </div>
+
+    <script>
+        function showForm() {
+            const shape = document.getElementById("shape").value;
+            const calculationType = document.getElementById("calculationType").value;
+            let formHtml = "";
+        
+            if (shape === "triangle") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="100" oninput="drawShape(); calculate();"></label><br>
+                    <label>Сторона b: <input type="number" id="b" value="80" oninput="drawShape(); calculate();"></label><br>
+                    <label>Сторона c: <input type="number" id="c" value="60" oninput="drawShape(); calculate();"></label><br>
+                    <label>Угол α: <input type="number" id="angleA" value="60" oninput="drawShape(); calculate();"></label><br>
+                `;
+            } else if (shape === "rectangle" || shape === "parallelogram") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="120" oninput="drawShape(); calculate();"></label><br>
+                    <label>Сторона b: <input type="number" id="b" value="60" oninput="drawShape(); calculate();"></label><br>
+                `;
+            } else if (shape === "square" || shape === "rhombus") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="100" oninput="drawShape(); calculate();"></label><br>
+                `;
+            } else if (shape === "trapezoid") {
+                formHtml = `
+                    <label>Основание a: <input type="number" id="a" value="120" oninput="drawShape(); calculate();"></label><br>
+                    <label>Основание b: <input type="number" id="b" value="80" oninput="drawShape(); calculate();"></label><br>
+                    <label>Высота h: <input type="number" id="h" value="60" oninput="drawShape(); calculate();"></label><br>
+                `;
+            }
+        
+            document.getElementById("form-container").innerHTML = formHtml;
+            drawShape();
+        }        
+        
+        
+        function updateDiameter() {
+            const r = parseFloat(document.getElementById("r").value);
+            document.getElementById("d").value = (2 * r).toFixed(2);
+        }
+
+        
+        function calculate() {
+            const shape = document.getElementById("shape").value;
+            const calculationType = document.getElementById("calculationType").value;
+            let result = "";
+        
+            if (calculationType === "area") {
+                if (shape === "triangle") {
+                    const a = parseFloat(document.getElementById("a").value);
+                    const h = parseFloat(document.getElementById("h").value);
+                    result = `Площадь: ${(0.5 * a * h).toFixed(2)}`;
+                } else if (shape === "rectangle" || shape === "parallelogram") {
+                    const a = parseFloat(document.getElementById("a").value);
+                    const b = parseFloat(document.getElementById("b").value);
+                    result = `Площадь: ${a * b}`;
+                } else if (shape === "square" || shape === "rhombus") {
+                    const a = parseFloat(document.getElementById("a").value);
+                    result = `Площадь: ${a * a}`;
+                } else if (shape === "trapezoid") {
+                    const a = parseFloat(document.getElementById("a").value);
+                    const b = parseFloat(document.getElementById("b").value);
+                    const h = parseFloat(document.getElementById("h").value);
+                    result = `Площадь: ${((a + b) / 2 * h).toFixed(2)}`;
+                }
+            } 
+            else if (calculationType === "perimeter") {
+                if (shape === "triangle") {
+                    const a = parseFloat(document.getElementById("a").value);
+                    const b = parseFloat(document.getElementById("b").value);
+                    const c = parseFloat(document.getElementById("c").value);
+                    result = `Периметр: ${a + b + c}`;
+                } else if (shape === "rectangle" || shape === "parallelogram") {
+                    const a = parseFloat(document.getElementById("a").value);
+                    const b = parseFloat(document.getElementById("b").value);
+                    result = `Периметр: ${2 * (a + b)}`;
+                } else if (shape === "square" || shape === "rhombus") {
+                    const a = parseFloat(document.getElementById("a").value);
+                    result = `Периметр: ${4 * a}`;
+                } else if (shape === "trapezoid") {
+                    const a = parseFloat(document.getElementById("a").value);
+                    const b = parseFloat(document.getElementById("b").value);
+                    const c = parseFloat(document.getElementById("c").value);
+                    const d = parseFloat(document.getElementById("d").value);
+                    result = `Периметр: ${a + b + c + d}`;
+                }
+            }
+            
+            document.getElementById("result").innerText = result;
+            drawShape();
+        }
+        
+        
+        
+        function drawShape() {
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.font = "14px Arial";
+        
+            const shape = document.getElementById("shape").value;
+        
+            if (shape === "triangle") {
+                ctx.beginPath();
+                ctx.moveTo(100, 200);
+                ctx.lineTo(200, 200);
+                ctx.lineTo(150, 100);
+                ctx.closePath();
+                ctx.stroke();
+        
+                ctx.fillText("A", 95, 205);
+                ctx.fillText("B", 205, 205);
+                ctx.fillText("C", 145, 95);
+            } 
+            else if (shape === "rectangle" || shape === "parallelogram") {
+                ctx.strokeRect(100, 100, 120, 60);
+        
+                ctx.fillText("A", 95, 105);
+                ctx.fillText("B", 225, 105);
+                ctx.fillText("C", 225, 165);
+                ctx.fillText("D", 95, 165);
+            } 
+            else if (shape === "square" || shape === "rhombus") {
+                ctx.strokeRect(120, 120, 100, 100);
+        
+                ctx.fillText("A", 115, 125);
+                ctx.fillText("B", 225, 125);
+                ctx.fillText("C", 225, 225);
+                ctx.fillText("D", 115, 225);
+            } 
+            else if (shape === "trapezoid") {
+                ctx.beginPath();
+                ctx.moveTo(100, 200);
+                ctx.lineTo(220, 200);
+                ctx.lineTo(180, 150);
+                ctx.lineTo(140, 150);
+                ctx.closePath();
+                ctx.stroke();
+        
+                ctx.fillText("A", 95, 205);
+                ctx.fillText("B", 225, 205);
+                ctx.fillText("C", 185, 145);
+                ctx.fillText("D", 135, 145);
+            }
+        }       
+             
+        
+        function toggleCalculationFields() {
+            const calculationType = document.getElementById("calculationType").value;
+            const formContainer = document.getElementById("form-container");
+        
+            if (calculationType === "none") {
+                formContainer.innerHTML = "";  
+            } else {
+                showForm();
+            }
+        }
+        
+
+        function showForm() {
+            const shape = document.getElementById("shape").value;
+            const calculationType = document.getElementById("calculationType").value;
+            let formHtml = "";
+        
+            if (shape === "triangle") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="100" oninput="drawShape()"></label><br>
+                    <label>Сторона b: <input type="number" id="b" value="80" oninput="drawShape()"></label><br>
+                    <label>Сторона c: <input type="number" id="c" value="60" oninput="drawShape()"></label><br>
+                    <label>Угол γ: <input type="number" id="angle" value="60" oninput="drawShape()"></label><br>
+                    <label>Высота h: <input type="number" id="h" readonly></label><br>
+                `;
+            } else if (shape === "rectangle") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="120" oninput="drawShape()"></label><br>
+                    <label>Сторона b: <input type="number" id="b" value="60" oninput="drawShape()"></label><br>
+                `;
+            } else if (shape === "square") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="100" oninput="drawShape()"></label><br>
+                `;
+            } else if (shape === "circle") {
+                formHtml = `
+                    <label>Радиус r: <input type="number" id="r" value="50" oninput="updateDiameter(); drawShape();"></label><br>
+                    <label>Диаметр d: <input type="number" id="d" value="100" readonly></label><br>
+                `;
+            }
+        
+            document.getElementById("form-container").innerHTML = formHtml;
+            drawShape();
+        }
+
+
+        window.onload = showForm;
+    </script>
+
+    <p><a href="{% url 'index' %}">🔙 На главную</a></p>
+</body>
+</html>
