@@ -151,108 +151,110 @@
 
         window.onload = showForm;
 
+        function drawCalculationFormula(shape, calculationType, values, result) {
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+    
+            // Очищаем предыдущие данные
+            ctx.clearRect(0, 250, canvas.width, 50);
+            ctx.fillStyle = "black";
+            ctx.font = "14px Arial";
+            
+            let formula = "";
+            let formulaWithValues = "";
+    
+            if (calculationType === "area") {
+                if (shape === "triangle") {
+                    formula = "S = 1/2 * a * h";
+                    formulaWithValues = `S = 1/2 * ${values.a} * ${values.h} = ${result}`;
+                } else if (shape === "rectangle" || shape === "parallelogram") {
+                    formula = "S = a * b";
+                    formulaWithValues = `S = ${values.a} * ${values.b} = ${result}`;
+                } else if (shape === "square" || shape === "rhombus") {
+                    formula = "S = a²";
+                    formulaWithValues = `S = ${values.a}² = ${result}`;
+                } else if (shape === "trapezoid") {
+                    formula = "S = (a + b) / 2 * h";
+                    formulaWithValues = `S = (${values.a} + ${values.b}) / 2 * ${values.h} = ${result}`;
+                } else if (shape === "circle") {
+                    formula = "S = π * r²";
+                    formulaWithValues = `S = 3.14 * ${values.r}² = ${result}`;
+                }
+            } else if (calculationType === "perimeter") {
+                if (shape === "triangle") {
+                    formula = "P = a + b + c";
+                    formulaWithValues = `P = ${values.a} + ${values.b} + ${values.c} = ${result}`;
+                } else if (shape === "rectangle" || shape === "parallelogram") {
+                    formula = "P = 2 * (a + b)";
+                    formulaWithValues = `P = 2 * (${values.a} + ${values.b}) = ${result}`;
+                } else if (shape === "square" || shape === "rhombus") {
+                    formula = "P = 4 * a";
+                    formulaWithValues = `P = 4 * ${values.a} = ${result}`;
+                } else if (shape === "trapezoid") {
+                    formula = "P = a + b + c + d";
+                    formulaWithValues = `P = ${values.a} + ${values.b} + ${values.c} + ${values.d} = ${result}`;
+                }
+            }
+    
+            // Рисуем формулы на канвасе
+            ctx.fillText(formula, 10, 280);
+            ctx.fillText(formulaWithValues, 10, 300);
+        }
+
         function calculate() {
             const shape = document.getElementById("shape").value;
             const calculationType = document.getElementById("calculationType").value;
             let result = "";
-        
-            if (calculationType === "area") { 
+            let values = {};
+    
+            if (calculationType === "area") {
                 if (shape === "triangle") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const h = parseFloat(document.getElementById("h").value);
-                    result = `Площадь: ${(0.5 * a * h).toFixed(2)}`;
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.h = parseFloat(document.getElementById("h").value);
+                    result = (0.5 * values.a * values.h).toFixed(2);
                 } else if (shape === "rectangle" || shape === "parallelogram") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const b = parseFloat(document.getElementById("b").value);
-                    result = `Площадь: ${(a * b).toFixed(2)}`;
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.b = parseFloat(document.getElementById("b").value);
+                    result = (values.a * values.b).toFixed(2);
                 } else if (shape === "square" || shape === "rhombus") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    result = `Площадь: ${(a * a).toFixed(2)}`;
+                    values.a = parseFloat(document.getElementById("a").value);
+                    result = (values.a * values.a).toFixed(2);
                 } else if (shape === "trapezoid") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const b = parseFloat(document.getElementById("b").value);
-                    const h = parseFloat(document.getElementById("h").value);
-                    result = `Площадь: ${((a + b) / 2 * h).toFixed(2)}`;
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.b = parseFloat(document.getElementById("b").value);
+                    values.h = parseFloat(document.getElementById("h").value);
+                    result = (((values.a + values.b) / 2) * values.h).toFixed(2);
+                } else if (shape === "circle") {
+                    values.r = parseFloat(document.getElementById("r").value);
+                    result = (Math.PI * values.r * values.r).toFixed(2);
                 }
-            } 
-        
-            else if (calculationType === "perimeter") { 
+            } else if (calculationType === "perimeter") {
                 if (shape === "triangle") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const b = parseFloat(document.getElementById("b").value);
-                    const c = parseFloat(document.getElementById("c").value);
-                    result = `Периметр: ${(a + b + c).toFixed(2)}`;
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.b = parseFloat(document.getElementById("b").value);
+                    values.c = parseFloat(document.getElementById("c").value);
+                    result = (values.a + values.b + values.c).toFixed(2);
                 } else if (shape === "rectangle" || shape === "parallelogram") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const b = parseFloat(document.getElementById("b").value);
-                    result = `Периметр: ${(2 * (a + b)).toFixed(2)}`;
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.b = parseFloat(document.getElementById("b").value);
+                    result = (2 * (values.a + values.b)).toFixed(2);
                 } else if (shape === "square" || shape === "rhombus") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    result = `Периметр: ${(4 * a).toFixed(2)}`;
+                    values.a = parseFloat(document.getElementById("a").value);
+                    result = (4 * values.a).toFixed(2);
                 } else if (shape === "trapezoid") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const b = parseFloat(document.getElementById("b").value);
-                    const c = parseFloat(document.getElementById("c").value);
-                    const d = parseFloat(document.getElementById("d").value);
-                    result = `Периметр: ${(a + b + c + d).toFixed(2)}`;
-                }
-            } 
-        
-            else if (calculationType === "height") { 
-                if (shape === "triangle") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const angle = parseFloat(document.getElementById("angleA").value);
-                    const h = (a * Math.sin(angle * Math.PI / 180)).toFixed(2);
-                    result = `Высота: ${h}`;
-                } else if (shape === "trapezoid") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const b = parseFloat(document.getElementById("b").value);
-                    const area = parseFloat(document.getElementById("area").value);
-                    const h = ((2 * area) / (a + b)).toFixed(2);
-                    result = `Высота: ${h}`;
-                }
-            } 
-        
-            else if (calculationType === "median") { 
-                if (shape === "triangle") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const b = parseFloat(document.getElementById("b").value);
-                    const c = parseFloat(document.getElementById("c").value);
-                    const median = (0.5 * Math.sqrt(2 * b**2 + 2 * c**2 - a**2)).toFixed(2);
-                    result = `Медиана: ${median}`;
-                }
-            } 
-        
-            else if (calculationType === "bisector") { 
-                if (shape === "triangle") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const b = parseFloat(document.getElementById("b").value);
-                    const c = parseFloat(document.getElementById("c").value);
-                    const bisector = ((2 * b * c * Math.cos(Math.PI / 3)) / (b + c)).toFixed(2);
-                    result = `Биссектриса: ${bisector}`;
-                }
-            } 
-        
-            else if (calculationType === "angle") { 
-                if (shape === "triangle") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const b = parseFloat(document.getElementById("b").value);
-                    const c = parseFloat(document.getElementById("c").value);
-                    const angleA = (Math.acos((b**2 + c**2 - a**2) / (2 * b * c)) * (180 / Math.PI)).toFixed(2);
-                    result = `Угол A: ${angleA}°`;
-                }
-            } 
-        
-            else if (calculationType === "midline") { 
-                if (shape === "trapezoid") {
-                    const a = parseFloat(document.getElementById("a").value);
-                    const b = parseFloat(document.getElementById("b").value);
-                    result = `Средняя линия: ${((a + b) / 2).toFixed(2)}`;
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.b = parseFloat(document.getElementById("b").value);
+                    values.c = parseFloat(document.getElementById("c").value);
+                    values.d = parseFloat(document.getElementById("d").value);
+                    result = (values.a + values.b + values.c + values.d).toFixed(2);
                 }
             }
-        
+    
             document.getElementById("result").innerText = result;
+    
+            // Отрисовка графика и формулы
             drawShape(true);
+            drawCalculationFormula(shape, calculationType, values, result);
         }        
 
         function drawShape(showDetails = false) {
@@ -420,5 +422,7 @@
         }
 
     </script>
+
+    <p><a href="{% url 'index' %}">🔙 На главную</a></p>
 </body>
 </html>
